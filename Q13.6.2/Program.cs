@@ -11,30 +11,40 @@ namespace Q13._6._2
     {
         static void Main(string[] args)
         {
+
             string path = "C://Users/Администратор/Downloads/Text1 (1).txt";
-            if (File.Exists(path))
+            string text = File.ReadAllText(path);
+
+            var noPunctuationText = new string(text.Where(c => !char.IsPunctuation(c)).ToArray());
+            char[] delim = new char[] { ' ' };
+            var allWords = noPunctuationText.Split(delim, StringSplitOptions.RemoveEmptyEntries);
+
+            var topWords = new Dictionary<string, long>();
+
+            foreach (var word in allWords)
             {
-                string text = File.ReadAllText(path);
-                var noPunctuationText = new string(text.Where(c => !char.IsPunctuation(c)).ToArray());
-                string[] wordsArray = noPunctuationText.Split(new char[] { ' ' });
-                var topWords = new Dictionary<string, int>();
-                foreach (string word in wordsArray)
+                if (topWords.ContainsKey(word))
                 {
-                    if (topWords.ContainsKey(word)) topWords[word]++;
-                    else topWords.Add(word, 1);
+                    topWords[word]++;
                 }
-
-                foreach (var top in topWords)
+                else
                 {
-                    Console.Write(top.Key + ": ");
-                    foreach (var city in Convert.ToString(top.Value))
-                        Console.Write(city + " ");
-
-                    Console.WriteLine();
+                    topWords.Add(word, 1);
                 }
-
             }
+            var sortedTop = topWords.OrderByDescending(o => o.Value);
+            Console.WriteLine("Какие 10 слов чаще всего встречаются в тексте:\n");
 
-        }
+            var i = 0;
+            foreach (var key in sortedTop)
+            {
+                i++;
+                Console.WriteLine($"Слово '{key.Key}'  встречается {key.Value} раз\n");
+                if (i == 10) break;
+            }
+            Console.ReadLine();
+        } 
+
+        
     }
 }
